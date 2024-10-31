@@ -1,7 +1,7 @@
 pub struct InputBuffer {
     pub buffer: String,
-    buffer_length: i32,
-    input_length: i32,
+    pub buffer_length: usize,
+    pub input_length: usize,
 }
 
 impl InputBuffer {
