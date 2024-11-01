@@ -1,21 +1,31 @@
 use std::io::{self, Write};
-use std::process;
-
-use input_buffer::InputBuffer;
 
 mod input_buffer;
+mod meta_command;
+mod prepare;
 
 fn main() {
-    let mut input_buffer = InputBuffer::new();
+    let mut input_buffer = input_buffer::InputBuffer::new();
 
     loop {
         print_prompt();
         // todo: make functional or keep it like this?
         // it blocks the thread until a line is entered.
         read_input(&mut input_buffer);
+        let ch = input_buffer.buffer.chars().nth(0).unwrap();
+        if ch == '.' {
+            match meta_command::do_meta_command(&input_buffer) {
+                meta_command::MetaCommandResult::Success => {
+                    continue;
+                }
+                meta_command::MetaCommandResult::UnrecognizedCommand => {
+                    println!("Unrecognized command '{}'", input_buffer.buffer.trim());
+                    continue;
+                }
+            }
+        }
 
         match input_buffer.buffer.trim() {
-            "exit" => process::exit(0),
             "" => println!("No command entered!"),
             other => println!("Unknown command: '{}'", other),
         }
@@ -27,7 +37,7 @@ fn print_prompt() {
     io::stdout().flush().unwrap(); // ensure prompt is printed before reading line
 }
 
-fn read_input(input: &mut InputBuffer) {
+fn read_input(input: &mut input_buffer::InputBuffer) {
     input.buffer.clear();
     let read_bytes = io::stdin()
         .read_line(&mut input.buffer)
