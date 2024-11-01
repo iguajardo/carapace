@@ -9,23 +9,21 @@ fn main() {
 
     loop {
         print_prompt();
-        // todo: make functional or keep it like this?
-        // it blocks the thread until a line is entered.
         read_input(&mut input_buffer);
-        let ch = input_buffer.buffer.chars().nth(0).unwrap();
-        if ch == '.' {
-            match meta_command::do_meta_command(&input_buffer) {
-                meta_command::MetaCommandResult::Success => {
-                    continue;
-                }
+
+        let trimmed_input = input_buffer.buffer.trim();
+
+        if trimmed_input.starts_with('.') {
+            match meta_command::do_meta_command(trimmed_input) {
+                meta_command::MetaCommandResult::Success => continue,
                 meta_command::MetaCommandResult::UnrecognizedCommand => {
-                    println!("Unrecognized command '{}'", input_buffer.buffer.trim());
+                    println!("Unrecognized command '{}'", trimmed_input);
                     continue;
                 }
             }
         }
 
-        match input_buffer.buffer.trim() {
+        match trimmed_input {
             "" => println!("No command entered!"),
             other => println!("Unknown command: '{}'", other),
         }
