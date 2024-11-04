@@ -1,5 +1,7 @@
 use std::io::{self, Write};
 
+use prepare::{prepare_statement, Statement, PrepareResult};
+
 mod input_buffer;
 mod meta_command;
 mod prepare;
@@ -23,9 +25,15 @@ fn main() {
             }
         }
 
-        match trimmed_input {
-            "" => println!("No command entered!"),
-            other => println!("Unknown command: '{}'", other),
+        let mut statement = Statement::new(); // todo: add new constructor
+        match prepare_statement(&input_buffer, &mut statement) {
+            PrepareResult::Success => {
+                break;
+            }
+            PrepareResult::UnrecognizedStatement => {
+                println!("Unrecognized keyword at start of '{}'", input_buffer.buffer);
+                continue;
+            }
         }
     }
 }
