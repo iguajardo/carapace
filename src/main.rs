@@ -25,8 +25,8 @@ fn main() {
             }
         }
 
-        let mut statement = Statement::new(); // todo: add new constructor
-        match prepare_statement(&input_buffer, &mut statement) {
+        let mut statement = Statement::new();
+        match prepare_statement(trimmed_input, &mut statement) {
             PrepareResult::Success => {
                 break;
             }

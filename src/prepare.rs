@@ -1,4 +1,3 @@
-use crate::input_buffer::InputBuffer;
 
 #[repr(i32)]
 pub enum PrepareResult {
@@ -13,17 +12,25 @@ pub enum StatementType {
 }
 
 pub struct Statement {
-    pub statement_type: StatementType,
+    pub statement_type: Option<StatementType>,
 }
 
-pub fn prepare_statement(input: &InputBuffer, statement: &mut Statement) -> PrepareResult {
-    match input.buffer.as_str() {
+impl Statement {
+    pub fn new() -> Statement {
+        Statement{
+            statement_type: None,
+        }
+    }
+}
+
+pub fn prepare_statement(input: &str, statement: &mut Statement) -> PrepareResult {
+    match input {
         "insert" => { // string declared like this are stored in stack because they are static
-            statement.statement_type = StatementType::StatementInsert;
+            statement.statement_type = Some(StatementType::StatementInsert);
             PrepareResult::Success
         }
         "select" => {
-            statement.statement_type = StatementType::StatementSelect;
+            statement.statement_type = Some(StatementType::StatementSelect);
             PrepareResult::Success
         }
         _ => {
@@ -35,11 +42,14 @@ pub fn prepare_statement(input: &InputBuffer, statement: &mut Statement) -> Prep
 
 pub fn execute_statement(statement: &mut Statement) {
     match statement.statement_type {
-        StatementType::StatementInsert => {
+        Some(StatementType::StatementInsert) => {
             println!("This is where we would do a insert.");
         }
-        StatementType::StatementSelect => {
+        Some(StatementType::StatementSelect) => {
             println!("This is where we would do a select.");
+        }
+        None => {
+            println!("Statement not found");
         }
     }
 }
